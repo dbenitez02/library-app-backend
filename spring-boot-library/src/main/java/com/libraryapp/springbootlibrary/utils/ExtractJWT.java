@@ -37,17 +37,14 @@ public class ExtractJWT {
 
                 int remove = 1;
                 if (keyValue[1].endsWith("}")) {
-
                     remove = 2;
                 }
-
                 keyValue[1] = keyValue[1].substring(0, keyValue[1].length() - remove);
                 keyValue[1] = keyValue[1].substring(1);
 
                 // Just want to add the value which *should* be the email.
                 map.put(keyValue[0], keyValue[1]);
             }
-
         }
 
         // If the key is found, then return the value which is the email.

@@ -15,16 +15,17 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 
-        // Disable Cross Site Request Forgery
-        http.csrf().disable();
-
-        // Protect endpoints at /api/<type>/secure
+        // Protect endpoints at /api/books/secure/<type>
         http.authorizeHttpRequests(configurer ->
                 configurer
                     .requestMatchers("/api/books/secure/**")
                     .authenticated()
                     .anyRequest().permitAll())
                     .oauth2ResourceServer().jwt();
+
+
+        // Disable Cross Site Request Forgery
+        http.csrf().disable();
 
         // Cors filter
         http.cors();
