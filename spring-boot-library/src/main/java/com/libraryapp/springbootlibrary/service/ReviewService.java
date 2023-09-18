@@ -18,7 +18,7 @@ public class ReviewService {
 
     //  Dependency injection
     @Autowired
-    public ReviewService( ReviewRepository reviewRepository) {
+    public ReviewService(ReviewRepository reviewRepository) {
 
         this.reviewRepository = reviewRepository;
     }
@@ -40,7 +40,7 @@ public class ReviewService {
         Review review = new Review();
         review.setBookId(reviewRequest.getBookId());
         review.setRating(reviewRequest.getRating());
-        review.setUserEmail(review.getUserEmail());
+        review.setUserEmail(userEmail);
 
         // Check if there is a description given.
         if (reviewRequest.getReviewDescription().isPresent()) {
