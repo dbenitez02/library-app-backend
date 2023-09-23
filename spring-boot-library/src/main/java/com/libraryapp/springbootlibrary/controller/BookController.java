@@ -21,6 +21,7 @@ public class BookController {
         this.bookService = bookService;
     }
 
+
     @GetMapping("/secure/currentloans")
     public List<ShelfCurrentLoansResponse> currentLoans(@RequestHeader(value = "Authorization") String token)
             throws Exception {
@@ -30,7 +31,8 @@ public class BookController {
 
     /**
      *
-     * @return number of books checked out by userId
+     * @param token
+     * @return
      */
     @GetMapping("/secure/currentloans/count")
     public int currentLoansCount(@RequestHeader(value = "Authorization") String token) {
@@ -51,7 +53,7 @@ public class BookController {
     }
 
     /**
-     *
+     * End point for checkout.
      * @param bookId
      * @return checks out a book to a user.
      * @throws Exception
@@ -64,7 +66,7 @@ public class BookController {
     }
 
     /**
-     * User returns book
+     * End point for book return.
      * @param token
      * @param bookId
      * @throws Exception
@@ -74,5 +76,18 @@ public class BookController {
                            @RequestParam Long bookId) throws Exception {
         String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         bookService.returnBook(userEmail, bookId);
+    }
+
+    /**
+     * End point for loan renewal.
+     * @param token
+     * @param bookId
+     * @throws Exception
+     */
+    @PutMapping("/secure/renew/loan")
+    public void renewLoan(@RequestHeader(value = "Authorization") String token,
+                          @RequestParam Long bookId) throws Exception {
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        bookService.renewLoan(userEmail, bookId);
     }
 }
