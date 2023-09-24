@@ -2,8 +2,10 @@ package com.libraryapp.springbootlibrary.service;
 
 import com.libraryapp.springbootlibrary.dao.BookRepository;
 import com.libraryapp.springbootlibrary.dao.CheckoutRepository;
+import com.libraryapp.springbootlibrary.dao.HistoryRepository;
 import com.libraryapp.springbootlibrary.entity.Book;
 import com.libraryapp.springbootlibrary.entity.Checkout;
+import com.libraryapp.springbootlibrary.entity.History;
 import com.libraryapp.springbootlibrary.responsemodels.ShelfCurrentLoansResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +24,15 @@ public class BookService {
 
     private BookRepository bookRepository;
     private CheckoutRepository checkoutRepository;
+    private HistoryRepository historyRepository;
 
     /**
      * Dependency Injection
      * */
-    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository) {
+    public BookService(BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository) {
         this.bookRepository = bookRepository;
         this.checkoutRepository = checkoutRepository;
+        this.historyRepository = historyRepository;
     }
 
     /**
@@ -61,6 +65,12 @@ public class BookService {
         return book.get();
     }
 
+    /**
+     *
+     * @param userEmail
+     * @param bookId
+     * @return
+     */
     public Boolean checkoutBookByUser(String userEmail, Long bookId) {
         Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
         if (validateCheckout != null) {
@@ -117,25 +127,36 @@ public class BookService {
     }
 
     /**
-     * User is returning the book. Update copies available.
+     * User is returning the book. Update copies available. Book removed from loans page
      * @param userEmail
      * @param bookId
      * @throws Exception
      */
     public void returnBook (String userEmail, Long bookId) throws Exception {
-        Optional<Book> book = bookRepository.findById(bookId);
 
+        Optional<Book> book = bookRepository.findById(bookId);
         Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
 
         if (!book.isPresent() || validateCheckout == null) {
             throw new Exception("Book does not exist or not checked out by user.");
         }
 
-        book.get().setCopies(book.get().getCopiesAvailable() + 1);
+        book.get().setCopiesAvailable(book.get().getCopiesAvailable() + 1);
 
         bookRepository.save(book.get());
-
         checkoutRepository.deleteById(validateCheckout.getId());
+
+        History history = new History(
+                userEmail,
+                validateCheckout.getCheckoutDate(),
+                LocalDate.now().toString(),
+                book.get().getTitle(),
+                book.get().getAuthor(),
+                book.get().getDescription(),
+                book.get().getImg()
+        );
+
+        historyRepository.save(history);
     }
 
     /**
