@@ -111,7 +111,7 @@ public class BookService {
 
             /* If checkout is present find two dates, return date and current date, then calculate book due */
             if (checkout.isPresent()) {
-                Date d1 = sdf.parse(checkout.get().getCheckoutDate());  // Return date
+                Date d1 = sdf.parse(checkout.get().getReturnDate());  // Return date
                 Date d2 = sdf.parse(LocalDate.now().toString());        // Current date
 
                 TimeUnit time = TimeUnit.DAYS;
@@ -173,7 +173,7 @@ public class BookService {
             throw new Exception("Book does not exist or not checked out by user");
         }
 
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyy-MM-dd");
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         Date d1 = sdFormat.parse(validateCheckout.getReturnDate());
         Date d2 = sdFormat.parse(LocalDate.now().toString());
